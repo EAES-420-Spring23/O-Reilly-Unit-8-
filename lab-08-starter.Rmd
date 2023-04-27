@@ -1,7 +1,7 @@
 ---
 title: "Lab 08 - Quantifying Uncertainty"
-author: "Insert your name here"
-date: "Insert date here"
+author: "Catherine O'Reilly"
+date: "4/27/23"
 output: html_document
 ---
 
@@ -17,7 +17,11 @@ library(lubridate)
 
 ### Exercise 1
 
-Remove this text, and add your answer for Exercise 1 here.
+The name of the file we need to load is us-mms-simple.csv and it is a csv file.
+
+```{r import-data}
+fluxes <- read_csv("data/us-mms-simple.csv")
+```
 
 ## Fix dates
 
@@ -29,7 +33,19 @@ head(fluxes)
 
 ### Exercise 2
 
-Remove this text, and add your answer for Exercise 2 here.
+-   Then, complete the pipeline so that it will subset the data for **one month in summer in 2020** (June, July or August).\
+
+-   Then, select a numerical variable you found to be interesting in Lab 7 (or another numerical variable you find interesting).
+
+-   Remember to change `eval` to `T` when you are ready to run the chunk.
+    Note that you are creating a new data frame called `fluxes_subset` from this pipeline.
+
+```{r subset-fluxes, eval = T}
+fluxes_subset <- fluxes %>% 
+  filter(date > "2020-06-01" & date < "2020-06-30") %>% 
+  select(date, fco2, evaporation)
+head(fluxes_subset, 10) 
+```
 
 ### Exercise 3
 
