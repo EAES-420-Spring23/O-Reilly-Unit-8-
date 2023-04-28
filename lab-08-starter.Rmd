@@ -76,11 +76,25 @@ The first row of the code is naming our new data object as monroe_June_subsample
 
 ### Exercise 7
 
-Remove this text, and add your answer for Exercise 7 here.
+We will now step you through generating bootstrap samples.
+
+7.  Take 1000 bootstrap samples. Call your new object `monroe_MONTH_boot`
+
+```{r create-bootstraps, eval = T}
+monroe_June_boot <- bootstraps(monroe_June_subsample, times = 1000)
+```
 
 ### Exercise 8
 
-Remove this text, and add your answer for Exercise 8 here.
+8.  For each sample: fit a model and save output in model column. Tidy model output and save in coef_info column. Call your new model object `monroe_MONTH_models`.
+
+```{r fit-models, eval = T}
+monroe_June_models <- monroe_June_boot%>%
+  mutate(
+    model = map(splits, ~ lm(fco2 ~ evaporation, data = .)),
+    coef_info = map(model, tidy)
+  )
+```
 
 ### Exercise 9
 
