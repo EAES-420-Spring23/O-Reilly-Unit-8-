@@ -25,7 +25,7 @@ fluxes <- read_csv("data/us-mms-simple.csv")
 
 ## Fix dates
 
-```{r fix-dates, eval = F}
+```{r fix-dates, eval = T}
 fluxes <- fluxes %>% 
   mutate(date = mdy_hm(date))
 head(fluxes)
@@ -107,17 +107,79 @@ int_pctl(monroe_June_models, coef_info)
 
 ### Exercise 10
 
-Remove this text, and add your answer for Exercise 10 here.
+```{r create-warm-temperatures, eval = T}
+temps_june_july <- fluxes %>% 
+  filter(date > "2020-06-01" & date < "2020-07-31") %>% 
+  mutate(warm_temperatures = case_when(
+    air_temperature > 30 ~ "yes",
+    air_temperature < 30 ~ "no",
+    TRUE ~ NA
+  ),
+        month = case_when(
+    date > "2020-06-01" & date < "2020-06-30" ~ "June",
+    date > "2020-07-01" & date < "2020-07-31" ~ "July",
+    TRUE ~ NA
+  )
+        ) %>% 
+  select(month, air_temperature, warm_temperatures)
+```
 
 ### Exercise 11
 
-Remove this text, and add your answer for Exercise 11 here.
+```{r visualize-warm-temperatures, eval = T}
+temps_june_july %>% 
+  filter(!is.na(month) & !is.na(warm_temperatures)) %>% 
+  mutate(month = fct_relevel(month, "June", "July")) %>% 
+  ggplot(aes(x = month, fill = warm_temperatures)) +
+  geom_bar() +
+  scale_fill_manual(values = c("blue", "orange")) +
+  theme_minimal() +
+  labs(title = "Hours of warm or cool temperatures",
+       subtitle = "In June and July",
+       y = "Count",
+       x = "Month",
+       fill = "Temp > 20-degrees C?") +
+  theme_bw()
+```
+
+Warm months are more frequently observed in July. 
+
+```{r get-counts, eval = T}
+temps_june_july %>% 
+  filter(!is.na(month) & !is.na(warm_temperatures)) %>% 
+  group_by(month) %>% 
+  summarize(warm = sum(warm_temperatures == "yes"),
+            cool = sum(warm_temperatures == "no"),
+            total_hours = n())
+```
+
 
 ### Exercise 12
 
-Remove this text, and add your answer for Exercise 12 here.
+12. Using the code chunk below in your starter file, insert the values from the last output to compute the sample statistic `p`.
+
+```{r calculate-sample-p, eval = T}
+p_hat <- (34/654) - (3/691) # Eqn is n_yes_july/n_all_july - n_yes_june/n_all_june
+p_hat
+```
+
+From this we can say...
+
+"From our data, warm temperatures are 4.76 times more likely in July than in June"
 
 ### Exercise 13
 
-Remove this text, and add your answer for Exercise 13 here.
+13. Copy and paste the code chunk below, and complete it to test the hypothesis that `warm_temperatures` is dependent on `month` in a non-random manner using 1000 bootstrap simulations. After completing the code, state below you chunk output whether you will accept or reject the null hypothesis, and why.
 
+```{r test-temperature-hypothesis, eval = T}
+set.seed(35)
+temps_june_july %>%
+  filter(!is.na(month) & !is.na(warm_temperatures)) %>% 
+  specify(warm_temperatures ~ month, success = "yes") %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in props", order = c("June", "July")) %>% 
+  summarize(p_value = sum(stat > p_hat) / n())
+```
+
+Because the p-value here is 0 and less than 0.05, we can reject the null hypothesis that there is no correlation between month and warm temperatures. 
