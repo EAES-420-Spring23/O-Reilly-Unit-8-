@@ -33,13 +33,6 @@ head(fluxes)
 
 ### Exercise 2
 
--   Then, complete the pipeline so that it will subset the data for **one month in summer in 2020** (June, July or August).\
-
--   Then, select a numerical variable you found to be interesting in Lab 7 (or another numerical variable you find interesting).
-
--   Remember to change `eval` to `T` when you are ready to run the chunk.
-    Note that you are creating a new data frame called `fluxes_subset` from this pipeline.
-
 ```{r subset-fluxes, eval = T}
 fluxes_subset <- fluxes %>% 
   filter(date > "2020-06-01" & date < "2020-06-30") %>% 
@@ -49,11 +42,6 @@ head(fluxes_subset, 10)
 
 ### Exercise 3
 
-3.  Before we generate many random samples from our month of flux data. Let's double check the dimensions of our dataset.
-
--   Insert and label a code chunk into your starter file under Exercise 3 or use in-line code to state how many observations (rows) of data you have for the month you selected.
--   Also state what each row represents
-
 ``` {r counting number of rows}
 nrow(fluxes_subset)
 ```
@@ -61,17 +49,30 @@ There are 695 observations in June 2020, with each row representing a specific h
 
 ### Exercise 4
 
-4.  If we defined our underlying population as **summertime** `fco2` fluxes, would our sample be a good sample of that population? Explain why or why not?
-
 Defining our underlying population as summertime, the month of June (the sample I have chosen) would likely be a good representative of that population. Because fco2 fluxes vary drastically across the seasons, the month of June would not be a good representative of the entire year-round fco2 fluxes, but because we are defining the overall population as just the summertime season, the month of June would be a good sample. 
 
 ### Exercise 5
 
-Remove this text, and add your answer for Exercise 5 here.
+``` {r fitting a linear model}
+linear_reg() %>% 
+  set_engine("lm") %>% 
+  fit(fco2 ~ evaporation, data = fluxes_subset) %>% 
+  tidy()
+```
+
+For every unit increase in evaporation, the fco2 value increases by 1.146 units.
 
 ### Exercise 6
 
-Remove this text, and add your answer for Exercise 6 here.
+```{r randomoize-and-slice, eval = T}
+monroe_June_subsample <- fluxes_subset %>% 
+  mutate(row = 1:n(),
+         rrow = sample(row, size = n(), replace  = F)) %>% 
+  arrange(rrow) %>% 
+  slice_head(n=139)
+```
+
+The first row of the code is naming our new data object as monroe_June_subsample and setting up our pipeline with fluxes_subset. The next line of code uses the mutate function to create a column titled row which labels each row starting at 1 and going until 695 and to create a column called rrow which randomly samples from row without replacing the values. Then rrow is arranged in order from least to greatest, and using slice_head() allows us to keep the first 20% of the data. 
 
 ### Exercise 7
 
