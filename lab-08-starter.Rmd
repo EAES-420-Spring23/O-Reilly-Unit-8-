@@ -98,7 +98,12 @@ monroe_June_models <- monroe_June_boot%>%
 
 ### Exercise 9
 
-Remove this text, and add your answer for Exercise 9 here.
+```{r get-slope-range, eval = T}
+monroe_June_coef <- monroe_June_models %>%
+  unnest(coef_info)
+
+int_pctl(monroe_June_models, coef_info)
+```
 
 ### Exercise 10
 
