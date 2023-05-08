@@ -51,7 +51,7 @@ There are 695 observations in June 2020, with each row representing a specific h
 
 Defining our underlying population as summertime, the month of June (the sample I have chosen) would likely be a good representative of that population. Because fco2 fluxes vary drastically across the seasons, the month of June would not be a good representative of the entire year-round fco2 fluxes, but because we are defining the overall population as just the summertime season, the month of June would be a good sample. 
 
-### Exercise 5
+### Exercise 5-1
 
 ``` {r fitting a linear model}
 linear_reg() %>% 
